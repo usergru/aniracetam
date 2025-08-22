@@ -1,6 +1,6 @@
 {
   "name": "aniracetam",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A terminal-based language learning program with spaced repetition, similar to Anki flashcards but fully offline after initial setup.",
   "main": "src/index.js",
   "bin": {
