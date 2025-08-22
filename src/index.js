@@ -87,18 +87,16 @@ async function setupLanguage() {
       if (isSupported) {
         isValidLanguage = true;
       } else {
-        console.log(chalk.red(`
-❌ Language code "${language}" is not supported or invalid. Please try another language code.`));
-        console.log(chalk.yellow('Common language codes: es (Spanish), fr (French), de (German), ru (Russian), zh (Chinese), ja (Japanese)
-'));
+        console.log(chalk.red(`Language code "${language}" is not supported or invalid. Please try another language code.`));
+        console.log(chalk.yellow('Common language codes: es (Spanish), fr (French), de (German), ru (Russian), zh (Chinese), ja (Japanese)'));
+        console.log(''); // Empty line for spacing
       }
     }
     
     config.targetLanguage = language;
     saveConfig(config);
-    console.log(chalk.green(`
-Language set to: ${language}
-`));
+    console.log(chalk.green(`Language set to: ${language}`));
+    console.log(''); // Empty line for spacing
   }
   
   return config.targetLanguage;
@@ -130,15 +128,12 @@ async function addSentence(targetLanguage) {
     sentences.push(newSentence);
     saveSentences(sentences);
     
-    console.log(chalk.green(`
-Sentence added successfully!`));
+    console.log(chalk.green('Sentence added successfully!'));
     console.log(chalk.cyan(`English: ${sentence}`));
-    console.log(chalk.cyan(`${targetLanguage}: ${translated}
-`));
+    console.log(chalk.cyan(`${targetLanguage}: ${translated}`));
+    console.log(''); // Empty line for spacing
   } catch (error) {
     console.log(chalk.red('Translation failed:', error.message));
-    // Let's also log the full error for debugging
-    console.log(chalk.red('Full error details:', error));
   }
 }
 
@@ -147,8 +142,8 @@ async function reviewSentences() {
   const sentences = loadSentences();
   
   if (sentences.length === 0) {
-    console.log(chalk.yellow('No sentences to review. Add some sentences first!
-'));
+    console.log(chalk.yellow('No sentences to review. Add some sentences first!'));
+    console.log(''); // Empty line for spacing
     return;
   }
   
@@ -157,8 +152,8 @@ async function reviewSentences() {
   const dueSentences = sentences.filter(sentence => new Date(sentence.nextReview) <= now);
   
   if (dueSentences.length === 0) {
-    console.log(chalk.yellow('No sentences are due for review right now.
-'));
+    console.log(chalk.yellow('No sentences are due for review right now.'));
+    console.log(''); // Empty line for spacing
     return;
   }
   
@@ -166,8 +161,7 @@ async function reviewSentences() {
   dueSentences.sort((a, b) => new Date(a.nextReview) - new Date(b.nextReview));
   
   for (const sentence of dueSentences) {
-    console.log(chalk.cyan(`
-${sentence.original}`));
+    console.log(chalk.cyan(`\n${sentence.original}`));
     
     const recall = await input({
       message: 'Translate this sentence (press Enter to see answer):'
@@ -183,16 +177,16 @@ ${sentence.original}`));
       ]
     });
     
-    console.log(chalk.cyan(`Correct translation: ${sentence.translated}
-`));
+    console.log(chalk.cyan(`Correct translation: ${sentence.translated}`));
+    console.log(''); // Empty line for spacing
     
     // Update spaced repetition values based on quality response
     updateSpacedRepetition(sentence, quality);
   }
   
   saveSentences(sentences);
-  console.log(chalk.green('Review session completed!
-'));
+  console.log(chalk.green('Review session completed!'));
+  console.log(''); // Empty line for spacing
 }
 
 // Update spaced repetition algorithm
