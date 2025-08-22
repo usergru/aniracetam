@@ -57,19 +57,48 @@ function saveConfig(config) {
   fs.writeJsonSync(configDir, config, { spaces: 2 });
 }
 
+// Test if a language code is supported
+async function testLanguageSupport(languageCode) {
+  try {
+    // Try to translate a simple word to test if the language is supported
+    await translate('test', languageCode);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 // Set up language preference
 async function setupLanguage() {
   const config = loadConfig();
   
   if (!config.targetLanguage) {
-    const language = await input({
-      message: 'Enter the language code you want to learn (e.g., es for Spanish, fr for French):',
-      validate: (input) => input.length > 0 || 'Please enter a language code'
-    });
+    let language;
+    let isValidLanguage = false;
+    
+    while (!isValidLanguage) {
+      language = await input({
+        message: 'Enter the language code you want to learn (e.g., es for Spanish, fr for French, ru for Russian):',
+        validate: (input) => input.length > 0 || 'Please enter a language code'
+      });
+      
+      // Test if the language is supported
+      const isSupported = await testLanguageSupport(language);
+      if (isSupported) {
+        isValidLanguage = true;
+      } else {
+        console.log(chalk.red(`
+❌ Language code "${language}" is not supported or invalid. Please try another language code.`));
+        console.log(chalk.yellow('Common language codes: es (Spanish), fr (French), de (German), ru (Russian), zh (Chinese), ja (Japanese)
+'));
+      }
+    }
     
     config.targetLanguage = language;
     saveConfig(config);
-    console.log(chalk.green(`\nLanguage set to: ${language}\n`));
+    console.log(chalk.green(`
+Language set to: ${language}
+`));
   }
   
   return config.targetLanguage;
@@ -101,9 +130,11 @@ async function addSentence(targetLanguage) {
     sentences.push(newSentence);
     saveSentences(sentences);
     
-    console.log(chalk.green('\nSentence added successfully!'));
+    console.log(chalk.green(`
+Sentence added successfully!`));
     console.log(chalk.cyan(`English: ${sentence}`));
-    console.log(chalk.cyan(`${targetLanguage}: ${translated}\n`));
+    console.log(chalk.cyan(`${targetLanguage}: ${translated}
+`));
   } catch (error) {
     console.log(chalk.red('Translation failed:', error.message));
     // Let's also log the full error for debugging
@@ -116,7 +147,8 @@ async function reviewSentences() {
   const sentences = loadSentences();
   
   if (sentences.length === 0) {
-    console.log(chalk.yellow('No sentences to review. Add some sentences first!\n'));
+    console.log(chalk.yellow('No sentences to review. Add some sentences first!
+'));
     return;
   }
   
@@ -125,7 +157,8 @@ async function reviewSentences() {
   const dueSentences = sentences.filter(sentence => new Date(sentence.nextReview) <= now);
   
   if (dueSentences.length === 0) {
-    console.log(chalk.yellow('No sentences are due for review right now.\n'));
+    console.log(chalk.yellow('No sentences are due for review right now.
+'));
     return;
   }
   
@@ -133,7 +166,8 @@ async function reviewSentences() {
   dueSentences.sort((a, b) => new Date(a.nextReview) - new Date(b.nextReview));
   
   for (const sentence of dueSentences) {
-    console.log(chalk.cyan(`\n${sentence.original}`));
+    console.log(chalk.cyan(`
+${sentence.original}`));
     
     const recall = await input({
       message: 'Translate this sentence (press Enter to see answer):'
@@ -149,14 +183,16 @@ async function reviewSentences() {
       ]
     });
     
-    console.log(chalk.cyan(`Correct translation: ${sentence.translated}\n`));
+    console.log(chalk.cyan(`Correct translation: ${sentence.translated}
+`));
     
     // Update spaced repetition values based on quality response
     updateSpacedRepetition(sentence, quality);
   }
   
   saveSentences(sentences);
-  console.log(chalk.green('Review session completed!\n'));
+  console.log(chalk.green('Review session completed!
+'));
 }
 
 // Update spaced repetition algorithm
