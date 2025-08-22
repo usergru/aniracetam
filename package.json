@@ -1,0 +1,40 @@
+{
+  "name": "aniracetam",
+  "version": "1.0.0",
+  "description": "A terminal-based language learning program with spaced repetition, similar to Anki flashcards but fully offline after initial setup.",
+  "main": "src/index.js",
+  "bin": {
+    "aniracetam": "./src/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usergru/aniracetam.git"
+  },
+  "keywords": [
+    "language",
+    "learning",
+    "spaced-repetition",
+    "flashcards",
+    "terminal",
+    "cli",
+    "anki",
+    "translation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/usergru/aniracetam/issues"
+  },
+  "homepage": "https://github.com/usergru/aniracetam#readme",
+  "dependencies": {
+    "@inquirer/prompts": "^7.8.3",
+    "chalk": "^4.1.2",
+    "figlet": "^1.8.2",
+    "fs-extra": "^11.3.1",
+    "google-translate-api": "^2.3.0"
+  }
+}
