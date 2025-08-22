@@ -88,7 +88,10 @@ async function setupLanguage() {
         isValidLanguage = true;
       } else {
         console.log(chalk.red(`Language code "${language}" is not supported or invalid. Please try another language code.`));
-        console.log(chalk.yellow('Common language codes: es (Spanish), fr (French), de (German), ru (Russian), zh (Chinese), ja (Japanese)'));
+        console.log(chalk.yellow('Common language codes:'));
+        console.log(chalk.yellow('  es - Spanish    fr - French    de - German'));
+        console.log(chalk.yellow('  ru - Russian    zh - Chinese   ja - Japanese'));
+        console.log(chalk.yellow('  pt - Portuguese it - Italian   ko - Korean'));
         console.log(''); // Empty line for spacing
       }
     }
