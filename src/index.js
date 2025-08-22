@@ -3,7 +3,7 @@
 const chalk = require('chalk');
 const figlet = require('figlet');
 const fs = require('fs-extra');
-const translate = require('google-translate-api');
+const translate = require('translate').default;
 const path = require('path');
 const { input, select, confirm } = require('@inquirer/prompts');
 
@@ -83,13 +83,14 @@ async function addSentence(targetLanguage) {
   });
   
   try {
-    const res = await translate(sentence, { to: targetLanguage });
+    // Use the translate package
+    const translated = await translate(sentence, targetLanguage);
     
     const sentences = loadSentences();
     const newSentence = {
       id: sentences.length + 1,
       original: sentence,
-      translated: res.text,
+      translated: translated,
       language: targetLanguage,
       nextReview: new Date(),
       interval: 1, // days until next review
@@ -102,9 +103,11 @@ async function addSentence(targetLanguage) {
     
     console.log(chalk.green('\nSentence added successfully!'));
     console.log(chalk.cyan(`English: ${sentence}`));
-    console.log(chalk.cyan(`${targetLanguage}: ${res.text}\n`));
+    console.log(chalk.cyan(`${targetLanguage}: ${translated}\n`));
   } catch (error) {
     console.log(chalk.red('Translation failed:', error.message));
+    // Let's also log the full error for debugging
+    console.log(chalk.red('Full error details:', error));
   }
 }
 
