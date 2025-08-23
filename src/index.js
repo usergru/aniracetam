@@ -219,33 +219,55 @@ function updateSpacedRepetition(sentence, quality) {
 
 // Main application function
 async function main() {
-  displayHeader();
-  
-  const targetLanguage = await setupLanguage();
-  
-  while (true) {
-    const action = await select({
-      message: 'What would you like to do?',
-      choices: [
-        { name: 'Add a new sentence', value: 'add' },
-        { name: 'Review sentences', value: 'review' },
-        { name: 'Exit', value: 'exit' }
-      ]
-    });
+  try {
+    displayHeader();
     
-    switch (action) {
-      case 'add':
-        await addSentence(targetLanguage);
-        break;
-      case 'review':
-        await reviewSentences();
-        break;
-      case 'exit':
-        console.log(chalk.blue('Goodbye!'));
-        process.exit(0);
+    const targetLanguage = await setupLanguage();
+    
+    while (true) {
+      const action = await select({
+        message: 'What would you like to do?',
+        choices: [
+          { name: 'Add a new sentence', value: 'add' },
+          { name: 'Review sentences', value: 'review' },
+          { name: 'Exit', value: 'exit' }
+        ]
+      });
+      
+      switch (action) {
+        case 'add':
+          await addSentence(targetLanguage);
+          break;
+        case 'review':
+          await reviewSentences();
+          break;
+        case 'exit':
+          console.log(chalk.blue('Goodbye!'));
+          process.exit(0);
+      }
     }
+  } catch (error) {
+    // Handle graceful exit (Ctrl+C) without showing stack trace
+    if (error.name === 'ExitPromptError' || error.code === 'SIGINT') {
+      console.log(chalk.blue('\nGoodbye!'));
+      process.exit(0);
+    }
+    
+    // For all other errors, show a user-friendly message
+    console.log(chalk.red('An unexpected error occurred. Exiting...'));
+    process.exit(1);
   }
 }
 
 // Run the application
-main().catch(console.error);
+main().catch(error => {
+  // Handle graceful exit (Ctrl+C) without showing stack trace
+  if (error.name === 'ExitPromptError' || error.code === 'SIGINT') {
+    console.log(chalk.blue('\nGoodbye!'));
+    process.exit(0);
+  }
+  
+  // For all other errors, show a user-friendly message
+  console.log(chalk.red('An unexpected error occurred. Exiting...'));
+  process.exit(1);
+});
