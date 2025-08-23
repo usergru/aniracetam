@@ -119,8 +119,8 @@ async function addSentence(targetLanguage) {
     const sentences = loadSentences();
     const newSentence = {
       id: sentences.length + 1,
-      original: sentence,
-      translated: translated,
+      original: sentence, // English sentence
+      translated: translated, // Target language sentence
       language: targetLanguage,
       nextReview: new Date(),
       interval: 1, // days until next review
@@ -131,7 +131,7 @@ async function addSentence(targetLanguage) {
     sentences.push(newSentence);
     saveSentences(sentences);
     
-    console.log(chalk.green('Sentence added successfully!'));
+    console.log(chalk.green('\nSentence added successfully!'));
     console.log(chalk.cyan(`English: ${sentence}`));
     console.log(chalk.cyan(`${targetLanguage}: ${translated}`));
     console.log(''); // Empty line for spacing
@@ -141,12 +141,11 @@ async function addSentence(targetLanguage) {
 }
 
 // Review sentences using spaced repetition
-async function reviewSentences() {
+async function reviewSentences(targetLanguage) {
   const sentences = loadSentences();
   
   if (sentences.length === 0) {
-    console.log(chalk.yellow('No sentences to review. Add some sentences first!'));
-    console.log(''); // Empty line for spacing
+    console.log(chalk.yellow('No sentences to review. Add some sentences first!\n'));
     return;
   }
   
@@ -155,8 +154,7 @@ async function reviewSentences() {
   const dueSentences = sentences.filter(sentence => new Date(sentence.nextReview) <= now);
   
   if (dueSentences.length === 0) {
-    console.log(chalk.yellow('No sentences are due for review right now.'));
-    console.log(''); // Empty line for spacing
+    console.log(chalk.yellow('No sentences are due for review right now.\n'));
     return;
   }
   
@@ -164,11 +162,15 @@ async function reviewSentences() {
   dueSentences.sort((a, b) => new Date(a.nextReview) - new Date(b.nextReview));
   
   for (const sentence of dueSentences) {
-    console.log(chalk.cyan(`\n${sentence.original}`));
+    console.log(chalk.cyan(`\nTranslate this ${targetLanguage} sentence to English:`));
+    console.log(chalk.cyan(`${sentence.translated}`));
     
     const recall = await input({
-      message: 'Translate this sentence (press Enter to see answer):'
+      message: 'Your translation:'
     });
+    
+    console.log(chalk.cyan(`\nYour answer: ${recall}`));
+    console.log(chalk.cyan(`Correct answer: ${sentence.original}\n`));
     
     const quality = await select({
       message: 'How well did you know this?',
@@ -180,7 +182,6 @@ async function reviewSentences() {
       ]
     });
     
-    console.log(chalk.cyan(`Correct translation: ${sentence.translated}`));
     console.log(''); // Empty line for spacing
     
     // Update spaced repetition values based on quality response
@@ -188,8 +189,7 @@ async function reviewSentences() {
   }
   
   saveSentences(sentences);
-  console.log(chalk.green('Review session completed!'));
-  console.log(''); // Empty line for spacing
+  console.log(chalk.green('Review session completed!\n'));
 }
 
 // Update spaced repetition algorithm
@@ -239,7 +239,7 @@ async function main() {
           await addSentence(targetLanguage);
           break;
         case 'review':
-          await reviewSentences();
+          await reviewSentences(targetLanguage);
           break;
         case 'exit':
           console.log(chalk.blue('Goodbye!'));
